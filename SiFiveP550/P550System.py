@@ -41,6 +41,8 @@ import gem5.utils.multisim as multisim
 from m5.objects import *
 from m5.stats.gem5stats import get_simstat
 
+from P550Processor import P550Processor
+
 #####
 # Needed for local imports since gem5 takes our file
 #  and executes it in the context of the multisim module
@@ -52,7 +54,6 @@ sys.path.append(thispath)
 ######
 
 from P550Caches import *
-from P550Processor import P550Processor
 
 # This check ensures the gem5 binary is compiled to the RISCV ISA target. If not,
 # an exception will be thrown.
