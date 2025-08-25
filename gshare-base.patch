@@ -1,14 +1,8 @@
- src/cpu/pred/BranchPredictor.py |  9 ++++
- src/cpu/pred/SConscript         |  3 +-
- src/cpu/pred/gshare.cc          | 48 +++++++++++++++++++++
- src/cpu/pred/gshare.hh          | 93 +++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 152 insertions(+), 1 deletion(-)
-
 diff --git a/src/cpu/pred/BranchPredictor.py b/src/cpu/pred/BranchPredictor.py
-index a10b2c2cef..2d01f589b1 100644
+index 47b985242d..ba6ca39ffa 100644
 --- a/src/cpu/pred/BranchPredictor.py
 +++ b/src/cpu/pred/BranchPredictor.py
-@@ -157,6 +157,15 @@ class BranchPredictor(SimObject):
+@@ -228,6 +228,15 @@ class BranchPredictor(SimObject):
      )
  
  
@@ -25,7 +19,7 @@ index a10b2c2cef..2d01f589b1 100644
      type = "LocalBP"
      cxx_class = "gem5::branch_prediction::LocalBP"
 diff --git a/src/cpu/pred/SConscript b/src/cpu/pred/SConscript
-index ec3102cada..7eb94bdf39 100644
+index 6c03dd8a1b..31ce1b6275 100644
 --- a/src/cpu/pred/SConscript
 +++ b/src/cpu/pred/SConscript
 @@ -58,11 +58,12 @@ SimObject('BranchPredictor.py',
@@ -44,10 +38,10 @@ index ec3102cada..7eb94bdf39 100644
  Source('ras.cc')
 diff --git a/src/cpu/pred/gshare.cc b/src/cpu/pred/gshare.cc
 new file mode 100644
-index 0000000000..72c0598ebf
+index 0000000000..7d86c0f414
 --- /dev/null
 +++ b/src/cpu/pred/gshare.cc
-@@ -0,0 +1,48 @@
+@@ -0,0 +1,49 @@
 +#include "cpu/pred/gshare.hh"
 +
 +#include "base/intmath.hh"
@@ -68,8 +62,9 @@ index 0000000000..72c0598ebf
 +}
 +
 +void
-+GShareBP::updateHistories(ThreadID tid, Addr pc, bool uncond,
-+                         bool taken, Addr target, void * &bp_history)
++GShareBP::void updateHistories(ThreadID tid, Addr pc, bool uncond,
++                           bool taken, Addr target,
++                           const StaticInstPtr &inst, void * &bp_history)
 +{
 +// Place holder for a function that is called to update predictor history
 +}
@@ -98,10 +93,10 @@ index 0000000000..72c0598ebf
 +} // namespace gem5
 diff --git a/src/cpu/pred/gshare.hh b/src/cpu/pred/gshare.hh
 new file mode 100644
-index 0000000000..069fbc4151
+index 0000000000..61e1a743ea
 --- /dev/null
 +++ b/src/cpu/pred/gshare.hh
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,94 @@
 +#ifndef __CPU_PRED_GSHARE_PRED_HH__
 +#define __CPU_PRED_GSHARE_PRED_HH__
 +
@@ -156,8 +151,9 @@ index 0000000000..069fbc4151
 +     *   that has the branch predictor state associated
 +     *   with the lookup
 +     */
-+    void updateHistories(ThreadID tid, Addr pc, bool uncond, bool taken,
-+                         Addr target,  void * &bp_history) override;
++    void updateHistories(ThreadID tid, Addr pc, bool uncond,
++                           bool taken, Addr target,
++                           const StaticInstPtr &inst, void * &bp_history) override;
 +
 +
 +    /**

@@ -1,3 +1,7 @@
+""" 
+The Processor
+"""
+
 from gem5.isas import ISA
 from gem5.components.processors.base_cpu_core import BaseCPUCore
 from gem5.components.processors.base_cpu_processor import BaseCPUProcessor
@@ -16,7 +20,7 @@ class P550Core(BaseCPUCore):
     def __init__(
         self,
         core_id: int,
-        predictor: str = "local",
+        predictor: BranchPredictor
     ) -> None:
         requires(isa_required=ISA.RISCV)
 
@@ -27,8 +31,7 @@ class P550Core(BaseCPUCore):
         cpu = RiscvO3CPU(
             fuPool=fu_pool,
             cpu_id=core_id,
-            branchPred=P550Core.parse_predictor(predictor),
-            # fetchWidth=1,
+            branchPred=predictor
         )
 
         # Inheritance requirements
@@ -41,25 +44,7 @@ class P550Core(BaseCPUCore):
     def init_fupool(cls, integer: int, muldiv: int, rdwr: int):
         # See the src/o3/FuncUnitConfig.py for what these actually mean
         # if you want you can even make your own
-        return FUPool(
-            FUList=[
-                IntALU(count=integer),
-                IntMultDiv(count=muldiv),
-                FP_ALU(count=2),
-                FP_MultDiv(count=2),
-                ReadPort(count=rdwr),
-                WritePort(count=rdwr)
-            ]
-        )
-
-    @classmethod
-    def parse_predictor(cls, pred: str):
-        if pred == "local":
-            return LocalBP()
-        elif pred == "global":
-            return GlobalBP()
-        elif pred == "gshare":
-            return GShareBP()
+        return FUPool(FUList=[IntALU(count=integer), IntMultDiv(count=muldiv), FP_ALU(count=2), FP_MultDiv(count=2), ReadPort(count=rdwr), WritePort(count=rdwr)])
 
 
 class P550Processor(BaseCPUProcessor):
@@ -70,7 +55,7 @@ class P550Processor(BaseCPUProcessor):
     def __init__(
         self,
         num_cores: int,
-        predictor: str,
+        predictor: BranchPredictor = LocalBP()
     ) -> None:
         super().__init__(
             # Initialize as many cores as we want
@@ -80,8 +65,5 @@ class P550Processor(BaseCPUProcessor):
             ]
         )
 
-    def __repr__(self):
-        return "SiFiveP550"
-
     def __str__(self):
-        return "Member of SiFiveP550"
+        return "SiFiveP550"
